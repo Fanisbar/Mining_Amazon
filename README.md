@@ -13,3 +13,6 @@ timespan: May'96 - Sep'23
 pip install --upgrade ipywidgets spicy
 pip uninstall -y numpy
 pip install "numpy==1.21.6"
+
+pip install Pillow
+pip install --upgrade Pillow
