@@ -9,3 +9,7 @@
 το GoogleNews-vectors-negative300.bin (part2)  (GoogleNews-vectors-negative300.bin/GoogleNews-vectors-negative300.bin)
 
 timespan: May'96 - Sep'23
+
+pip install --upgrade ipywidgets spicy
+pip uninstall -y numpy
+pip install "numpy==1.21.6"
