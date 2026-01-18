@@ -8,9 +8,13 @@
 
 timespan: May'96 - Sep'23
 
-pip install --upgrade ipywidgets spicy
-pip uninstall -y numpy
-pip install "numpy==1.21.6"
 
-pip install Pillow
-pip install --upgrade Pillow
+
+
+
+
+
+todo:
+fix recall scores in recommendation system
+fix reviewing results of recommendation system
+add comments and textual analysis of the results
