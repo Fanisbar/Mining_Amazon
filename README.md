@@ -1,3 +1,5 @@
+Data mining project for amazon's datasets. Work in progress
+
 Μπαρμπαρόσος Θεοφάνης: 1115202200107
 
 Τα αρχεία part1.ipynb και part2.ipynb είναι η τελευταία τρεγμένη έκδοση των notebooks μας και για τα δύο parts.
