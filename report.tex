@@ -67,25 +67,31 @@ This project started off as coursework for \href{https://www.di.uoa.gr/studies/u
 \colorbox{backcolour}{\texttt{pip install -r requirements.txt}}
 After installation, the notebooks can be executed.
 
+\section{Datasets}
+Datasets used in this project are from \href{https://huggingface.co/datasets}{Hugging Face} and concern Amazon products, including reviews and metadata collected in 2023 by McAuley Lab. Both parts use the same 10 csv files: two datasets, reviews and metadata, for each product category. The first few code cells in both notebooks download the datasets locally. One could use the max\_rows variable to limit the datasets to an arbitrary number of rows, to save time and system resources. Full-size datasets are quite large and take up approximately 6.4GB of space.
 
 % ===================================================================
 % PART 1
 % ===================================================================
-\section{Part 1: Sentiment Analysis \& EDA}
+\section{Part 1: EDA \& Sentiment Analysis}
 
 \subsection{Introduction to Part 1}
 The objective of this part is to analyze the overall nature of the datasets, discover average prices, average ratings of the different categories, best and worst selling products and the relationship between user ratings and the textual content of reviews. Natural Language Processing (NLP) techniques are utilized to compute sentiment scores and correlate them with the star ratings.
 
 \subsection{Data Preprocessing}
-Description of the cleaning steps performed in \texttt{part1.ipynb}.
 \begin{itemize}
-    \item Handling missing values in \texttt{reviewText}.
-    \item removing duplicates.
-    \item Data type conversions.
+    \item After downloading, the datasets are used to create pandas DataFrames that can be later manipulated as desired.
+    \item All missing price values are replaced with the mean price value.
+    \item All bad values or NULL values are replaced with the mean price value.
+    \item All html elements are removed from the text column of the reviews(e.g. \&amp).
 \end{itemize}
+After experimentation, it was found that no other pre-processing was necessary for this part.
+
+\subsection{Exploratory Data Analysis}
+Briefly explore the nature of the datasets. The notebook displays the average product price in each category. This happens in between cells of code that aim to replace all bad values in the 'price' column of a category, with that mean price value. A set of plots then show the distribution of ratings in each category within the 5-star range. In simple words, it shows how many 1-star ratings, how many 2-star ratings, how many 3-star ratings etc. there are in each category. Next, 2 plots per category follow, showcasing the distribution of review lengths both in words and in characters. Explain what information we obtain from those plots
 
 \subsection{Product Performance Analysis}
-Here wefind the best and worst sellers
+Here we find the best and worst sellers
 
 \subsection{Sentiment Analysis Methodology}
 Explanation of the sentiment scoring approach (e.g., using VADER, TextBlob, or custom lexicons).
