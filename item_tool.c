@@ -1,3 +1,5 @@
+// tool for formatting text for use in latex code
+
 #include <stdio.h>
 #include <string.h>
 
