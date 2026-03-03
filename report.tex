@@ -361,8 +361,99 @@ It is evident that there were far too few reviews before 2012 for almost all the
 
 
 \subsection{Sentiment Analysis Methodology}
-In this section, an attempt is made to capture the sentiment of all reviews, in order to ultimately compare the textual reviews of products to their respective ratings. The pre trained model used for sentiment analysis is \href{https://vadersentiment.readthedocs.io/en/latest/#}{VADER} (Valence Aware Dictionary and sEntiment Reasoner). It was chosen because it is a sweet spot between performance and light-weight in terms of resources needed. 
-At first, a sentiment extraction function is applied to all reviews('text' column) filling up the new 'vader\_sentiment' column with . If the user's rating for a product is at least 4/5, then 0.2 is added to the sentiment score whereas if the rating is no more than 2/5, 0.2 is substracted from the sentiment score. These adjusted sentiment scores are stored in a new column: 'adjusted\_sentiment'. This adjustment is crucial because VADER 
+In this section, an attempt is made to capture the sentiment of all reviews, in order to ultimately compare the textual content of the product reviews to their respective ratings. The pre-trained model used for sentiment analysis is \href{https://vadersentiment.readthedocs.io/en/latest/#}{VADER} (Valence Aware Dictionary and sEntiment Reasoner).
+Initially, a sentiment extraction function is applied to all reviews ('text' column) populating the new 'vader\_sentiment' column with floating-point values ranging between -1 and 1. If the user's rating for a product is at least 4/5, then 0.2 is added to the sentiment score whereas if the rating is no more than 2/5, 0.2 is subtracted from the sentiment score. These adjusted sentiment scores are stored in a new column: 'adjusted\_sentiment'. This adjustment is crucial because it amplifies the positive and negative reviews making the classification easier. Finally, reviews with adjusted sentiment scores ranging from -1 to -0.33333 are labeled as negative. Symmetrically, scores between 0.33333 and 1 are labeled as positive, while the rest are neutral reviews. A sample output of the above process follows.\newline
+The first five results of sentiment extraction, adjustment, and labeling for each category are presented below:
+
+\begin{table}[H]
+    \centering
+    \caption{Sentiment Extraction Samples: Appliances}
+    \begin{tabular}{cccc}
+        \hline
+        \textbf{Rating} & \textbf{VADER Sentiment} & \textbf{Adjusted Sentiment} & \textbf{Final Sentiment} \\
+        \hline
+        5.0 &  0.6249 &  0.8249 & positive \\
+        5.0 &  0.0000 &  0.2000 & neutral \\
+        5.0 &  0.0000 &  0.2000 & neutral \\
+        5.0 &  0.9548 &  1.0000 & positive \\
+        5.0 &  0.4404 &  0.6404 & positive \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Sentiment Extraction Samples: Beauty}
+    \begin{tabular}{cccc}
+        \hline
+        \textbf{Rating} & \textbf{VADER Sentiment} & \textbf{Adjusted Sentiment} & \textbf{Final Sentiment} \\
+        \hline
+        5.0 &  0.8162 &  1.0000 & positive \\
+        4.0 &  0.7783 &  0.9783 & positive \\
+        5.0 &  0.8070 &  1.0000 & positive \\
+        1.0 &  0.0000 & -0.2000 & neutral \\
+        5.0 &  0.6369 &  0.8369 & positive \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Sentiment Extraction Samples: Musical Instruments}
+    \begin{tabular}{cccc}
+        \hline
+        \textbf{Rating} & \textbf{VADER Sentiment} & \textbf{Adjusted Sentiment} & \textbf{Final Sentiment} \\
+        \hline
+        5.0 &  0.9110 &  1.0000 & positive \\
+        3.0 & -0.1901 & -0.1901 & neutral \\
+        4.0 &  0.8176 &  1.0000 & positive \\
+        3.0 & -0.1531 & -0.1531 & neutral \\
+        5.0 & -0.4118 & -0.2118 & neutral \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Sentiment Extraction Samples: Software}
+    \begin{tabular}{cccc}
+        \hline
+        \textbf{Rating} & \textbf{VADER Sentiment} & \textbf{Adjusted Sentiment} & \textbf{Final Sentiment} \\
+        \hline
+        1.0 &  0.0000 & -0.2000 & neutral \\
+        5.0 &  0.9403 &  1.0000 & positive \\
+        5.0 &  0.9164 &  1.0000 & positive \\
+        4.0 &  0.4588 &  0.6588 & positive \\
+        4.0 &  0.8120 &  1.0000 & positive \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Sentiment Extraction Samples: Video Games}
+    \begin{tabular}{cccc}
+        \hline
+        \textbf{Rating} & \textbf{VADER Sentiment} & \textbf{Adjusted Sentiment} & \textbf{Final Sentiment} \\
+        \hline
+        4.0 &  0.9022 &  1.0000 & positive \\
+        5.0 &  0.8442 &  1.0000 & positive \\
+        5.0 &  0.6880 &  0.8880 & positive \\
+        5.0 &  0.5267 &  0.7267 & positive \\
+        5.0 &  0.6361 &  0.8361 & positive \\
+        \hline
+    \end{tabular}
+\end{table}
+
+An important optimization was implemented in the sentiment extraction function:
+\begin{lstlisting}[language=Python]
+analyzer = SentimentIntensityAnalyzer()
+def compute_vader_sentiment(text):
+    if pd.isna(text):
+        return 0.0
+    return analyzer.polarity_scores(str(text)[:1000])['compound']
+\end{lstlisting}
+By applying the string slice \texttt{[:1000]}, only the first 1000 characters of each review are processed to extract the sentiment. This choice conserved significant computational resources and time, as the datasets contained some extremely long reviews. Furthermore, since VADER's algorithm relies on lexicon and rule-based heuristics, evaluating the first 150 to 200 words (roughly 1000 characters) is generally more than sufficient to accurately capture the overall polarity of a text.
 
 \subsection{Results: Ratings vs. Sentiment}
 Analysis of the correlation between the numerical rating (1-5 stars) and the calculated sentiment score.
