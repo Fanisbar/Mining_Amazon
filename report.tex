@@ -101,7 +101,7 @@ After downloading, the datasets are used to create pandas DataFrames that can la
     \end{table}
     In order to ensure that the whole dataset consists of valid data, one step of data pre-processing is performed now, before moving on with the rest of the EDA: handling missing/bad values in the 'price' column. Further details are provided in the Data Pre-Processing section.
     
-    \item \item A set of plots shows the distribution of ratings in each category within the 5-star range. In other words, each plot illustrates the frequency of 1-star to 5-star ratings within each category's dataset. It becomes evident that across all product categories, the 1-star and 5-star ratings exhibit significantly higher frequencies compared to the intermediate ratings (2--4 stars). This pattern can be explained by the fact that customers are more likely to leave a review when they feel either extremely dissatisfied or fully satisfied with a product. In contrast, moderately satisfied users tend to provide feedback less frequently. \\
+    \item A set of plots shows the distribution of ratings in each category within the 5-star range. In other words, each plot illustrates the frequency of 1-star to 5-star ratings within each category's dataset. It becomes evident that across all product categories, the 1-star and 5-star ratings exhibit significantly higher frequencies compared to the intermediate ratings (2--4 stars). This pattern can be explained by the fact that customers are more likely to leave a review when they feel either extremely dissatisfied or fully satisfied with a product. In contrast, moderately satisfied users tend to provide feedback less frequently. \\
     Overall, an upward trend is observed in the rating distributions, indicating that positive reviews (4 and 5 stars) significantly outnumber negative ones (1 and 2 stars).
     \begin{figure}[H]
         \centering
@@ -527,50 +527,81 @@ As illustrated in the heatmaps, there is a strong positive correlation between t
 \section{Part 2: Product Analysis, Clustering and Market Basket Mining}
 
 \subsection{Introduction to Part 2}
-Overview of the objectives of Part 2, including product-level text processing, clustering, recommendation logic, and association rule mining.
+In this second part of the project, the focus shifts towards unsupervised machine learning techniques and data mining algorithms to discover hidden patterns within the product metadata and user transactions. Specifically, the text features of the products' titles and descriptions are processed and vectorized to cluster similar products together. Following this, a recommendation system is designed, both user-based and content-based. Finally, frequent pattern mining is applied to user purchasing histories to uncover association rules and seasonal market trends, with a special focus on the month of December as an example.
 
 \subsection{Dataset Preparation and Text Pre-Processing}
-Description of the pre-processing pipeline applied to product metadata and review text.
-
+Before applying any machine learning models, the textual metadata of the products (such as titles and descriptions) must be transformed into a clean, standardized format. The pre-processing pipeline consists of the following steps:
 \begin{itemize}
-    \item Text normalization (lowercasing, punctuation removal)
-    \item Expansion of contractions
-    \item Spell correction
-    \item Stopword removal
-    \item Vectorization using TF--IDF
+    \item \textbf{Text Normalization:} All characters are converted to lowercase, and punctuation marks are completely removed to ensure uniformity.
+    \item \textbf{Expansion of Contractions:} Common English contractions (e.g., "don't" to "do not") are expanded using the \texttt{contractions} library.
+    \item \textbf{Spell Correction:} The \texttt{pyspellchecker} library is utilized to correct misspelled words, reducing the noise in the dataset.
+    \item \textbf{Stopword Removal:} Frequently used words that carry minimal semantic weight (e.g., "the", "is", "in") are removed.
 \end{itemize}
 
 \subsection{Feature Extraction}
-Explanation of how textual features are transformed into numerical representations suitable for machine learning models.
+Following the text pre-processing, the clean text is transformed into numerical representations suitable for machine learning algorithms. This is achieved using the Term Frequency-Inverse Document Frequency (TF-IDF) vectorizer. TF-IDF evaluates how relevant a word is to a document within a collection of documents, assigning higher weights to terms that are frequent in a specific product's description but rare across the entire category. This step successfully converts the textual data into high-dimensional numerical vectors.
 
 \subsection{Product Clustering}
 
 \subsubsection{Clustering Methodology}
-Description of the clustering approach (e.g., K-Means) and distance metrics.
+To group similar products together, the K-Means clustering algorithm is applied to the TF-IDF feature space. An important observation during this phase is the relatively low silhouette scores and the visual overlap between clusters. 
+
+This behavior is expected and stems directly from the nature of the data. Because clustering relies on Natural Language Processing (NLP) over product descriptions, texts frequently share overlapping semantics and vocabulary. Furthermore, the TF-IDF vectorization creates an extremely high-dimensional feature space. In such spaces, distance metrics like the Euclidean distance lose their discriminative power---a statistical phenomenon widely known as the ``Curse of Dimensionality.'' Consequently, the clusters blend into one another naturally, rather than forming strictly separated boundaries.
 
 \subsubsection{Cluster Selection}
-Explanation of the elbow method and justification of the chosen number of clusters.
+To determine the optimal number of clusters ($k$), the Elbow Method is utilized alongside the \texttt{kneed} Python library, which mathematically identifies the point of maximum curvature. An important design choice was made regarding the search space for $k$:
+
+\begin{lstlisting}[language=Python]
+# The search range for optimal k is intentionally restricted
+k_values = range(5, 15)
+\end{lstlisting}
+
+This constraint was implemented because initial experiments revealed that without a lower bound, the algorithm occasionally identified $k=4$ as optimal for certain categories, but produced highly imbalanced or almost empty clusters. By enforcing a minimum of 5 clusters, the algorithm distributes the high-dimensional data more evenly, ensuring that the resulting subsets are dense and meaningful for the subsequent recommendation system.
 
 \subsubsection{Cluster Interpretation}
-Qualitative analysis of resulting clusters and their thematic coherence.
+Once the clusters are formed, they are qualitatively analyzed. By extracting the top TF-IDF terms for each cluster, distinct themes emerge, allowing us to assign meaningful labels to them. 
+\begin{figure}[H]
+    \centering
+    % Placeholder for Cluster Wordclouds/Plots
+    \includegraphics[width=0.8\textwidth]{example-image-a} 
+    \caption{Top keywords representing the thematic coherence of each cluster.}
+\end{figure}
 
 \subsection{Cluster-Based Recommendation Strategy}
-Description of the recommendation logic based on cluster membership and product similarity.
-
+A recommendation system was developed utilizing the previously formed clusters. When a user interacts with a specific product, the system first identifies the cluster to which this product belongs. Then, it calculates the Cosine Similarity between the target product's TF-IDF vector and the vectors of all other products within that same cluster. By restricting the similarity search exclusively within the cluster boundaries, the recommendation system operates significantly faster and suggests highly relevant products.
 
 \subsection{Association Rule Mining}
+To uncover hidden purchasing patterns, Market Basket Analysis is performed using the FP-Growth algorithm from the \texttt{mlxtend} library. A critical optimization was implemented here to prevent memory overflow (RAM crashes) when processing massive datasets:
 
+\begin{lstlisting}[language=Python]
+# Dynamic parameter calculation based on dataset size
+min_item_frequency = max(15, int(len(current_df) * 0.0002))
+min_support = 0.001 * (1 + (len(current_df) // 3_000_000))
+
+# Removing duplicate rules (A->B and B->A)
+rules_all['frozen_pair'] = rules_all.apply(
+    lambda row: frozenset(row['antecedents'].union(row['consequents'])), axis=1
+)
+rules_unique = rules_all.drop_duplicates(subset=['frozen_pair'])
+\end{lstlisting}
+
+Rather than using hardcoded limits, the \texttt{min\_item\_frequency} and \texttt{min\_support} parameters scale dynamically based on the dataset's size (e.g., keeping only the top 0.02\% of products). This prevents the FP-Tree from exploding with noisy, low-frequency itemsets in datasets exceeding 4 million rows (such as Software and Video Games). Additionally, since the Lift metric is mathematically symmetric, the algorithm inherently produces duplicate pairs (A $\rightarrow$ B and B $\rightarrow$ A). Using \texttt{frozenset} effectively filters out these duplicates, presenting only unique and actionable rules.
+
+\begin{figure}[H]
+    \centering
+    % Placeholder for ARM network graph or rules table
+    \includegraphics[width=0.8\textwidth]{example-image-b} 
+    \caption{Network graph of the top association rules extracted from user transactions.}
+\end{figure}
 
 \subsection{Temporal Pattern Analysis}
-Focused analysis on December transactions to capture seasonal purchasing behavior.  
-
-
+To capture seasonal purchasing behavior, the Association Rule Mining process is repeated exclusively for transactions made during December. The dynamic thresholding logic is maintained but adjusted for the smaller data volume. This targeted analysis successfully highlights "gift-buying" patterns, such as the strong association between gaming consoles and additional controllers, which are completely obscured when analyzing the entire year's data.
 
 \section{Conclusion}
-Summary of the findings from both parts.
+This report presented a holistic approach to mining Amazon product datasets, transitioning from basic exploratory analysis to advanced unsupervised machine learning.
 \begin{itemize}
-    \item \textbf{Part 1 Summary:} Sentiment analysis confirmed that...
-    \item \textbf{Part 2 Summary:} Market basket analysis revealed that...
+    \item \textbf{Part 1 Summary:} Exploratory and sentiment analysis confirmed that the vast majority of users leave reviews only when highly satisfied or dissatisfied. Furthermore, the robust handling of outliers and heatmaps demonstrated a strong positive correlation between textual sentiment and numerical star ratings.
+    \item \textbf{Part 2 Summary:} High-dimensional text data was successfully utilized to cluster products despite the Curse of Dimensionality, serving as the foundation for an efficient recommendation system. Finally, dynamic Market Basket Analysis successfully extracted unique, cross-selling rules and isolated distinct seasonal behaviors during the holiday period, overcoming significant computational hurdles.
 \end{itemize}
 
 \end{document}

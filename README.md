@@ -72,7 +72,7 @@ To handle the immense scale and complexity of the data, several critical data en
    cd mining_amazon
    ```
 2. **Install the required dependencies:**
-Make sure you have Python 3.10+ installed. Run the following command to install all necessary packages (Pandas, Seaborn, scikit-learn, mlxtend, nltk, etc.):
+Make sure you have Python 3.10+ installed (v3.10.12 used in development). Run the following command to install all necessary packages (Pandas, Seaborn, scikit-learn, mlxtend, nltk, etc.):
     ```bash
     pip install -r requirements.txt
     ```
@@ -84,3 +84,11 @@ Launch Jupyter and open the notebooks in order:
     jupyter-notebook
     ```
 *Note: Ensure you have a stable internet connection on the first run, as the datasets and NLTK/VADER lexicons will be downloaded automatically.*
+
+Total run time for part1: 
+Total run time for part2: 
+*(Excluding time for cells that are dependent on internet speeds)*
+CPU: AMD Ryzen 7 5700U
+RAM: 16GB DDR4 3200MHz
+
+TODO: add times, save csv's with best/worst sellers, frequent patterns
