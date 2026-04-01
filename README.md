@@ -1,4 +1,4 @@
-# Data Mining & Analysis on Amazon Datasets 🛒📊
+# Data Mining & Analysis on Amazon Datasets
 
 ![Python Version](https://img.shields.io/badge/Python-3.10.12-blue.svg)
 ![Jupyter Notebook](https://img.shields.io/badge/Jupyter-Ready-orange.svg)
