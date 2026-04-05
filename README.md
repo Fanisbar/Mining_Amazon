@@ -91,4 +91,4 @@ Total run time for part2:
 CPU: AMD Ryzen 7 5700U
 RAM: 16GB DDR4 3200MHz
 
-TODO: add times, save csv's with best/worst sellers, frequent patterns
+TODO: add times
