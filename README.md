@@ -86,7 +86,7 @@ Launch Jupyter and open the notebooks in order:
 *Note: Ensure you have a stable internet connection on the first run, as the datasets and NLTK/VADER lexicons will be downloaded automatically.*
 
 Total run time for part1: 
-Total run time for part2: 
+Total run time for part2: 26m 57s
 *(Excluding time for cells that are dependent on internet speeds)*
 CPU: AMD Ryzen 7 5700U
 RAM: 16GB DDR4 3200MHz
