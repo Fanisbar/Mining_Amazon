@@ -26,6 +26,7 @@ The analysis is strictly organized into two distinct Jupyter Notebooks, represen
 * **`part1.ipynb` - Exploratory Data Analysis & Sentiment Analysis:** Focuses on understanding the raw data, handling missing values, extracting basic statistics, identifying best/worst-selling products using custom heuristics, and correlating numerical ratings with the textual sentiment of user reviews.
 * **`part2.ipynb` - Product Clustering & Market Basket Analysis:** Focuses on unsupervised machine learning. It involves heavy NLP pre-processing, TF-IDF vectorization, K-Means clustering, building a cluster-based recommendation system, and extracting frequent purchasing patterns using the FP-Growth algorithm (with temporal analysis for the holiday season).
 * **`report.pdf` / `report.tex`:** The full academic report documenting all findings, visual plots, and technical design choices in detail. (!! Work in progress !!)
+*NOTE: This project has been finished in essence, but as I keep refining and tuning it further, the report completion is suspended and its information may be incomplete or false.*
 
 ---
 
@@ -85,10 +86,8 @@ Launch Jupyter and open the notebooks in order:
     ```
 *Note: Ensure you have a stable internet connection on the first run, as the datasets and NLTK/VADER lexicons will be downloaded automatically.*
 
-Total run time for part1: 
-Total run time for part2: 26m 57s
-*(Excluding time for cells that are dependent on internet speeds)*
-CPU: AMD Ryzen 7 5700U
-RAM: 16GB DDR4 3200MHz
-
-TODO: add times
+Total run time for part1:   
+Total run time for part2: 26m 57s  
+*(Excluding time for cells that are dependent on internet speeds)*  
+CPU: AMD Ryzen 7 5700U  
+RAM: 16GB DDR4 3200MHz  
