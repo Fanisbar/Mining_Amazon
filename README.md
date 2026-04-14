@@ -41,7 +41,7 @@ The data is sourced directly from [Hugging Face](https://huggingface.co/datasets
 
 ## Key Features & Methodologies
 
-### Part 1: EDA & Sentiment
+### Part 1: EDA & Sentiment Analysis
 * **Robust Data Imputation:** Safe handling of NaN and corrupted price strings using mean imputation.
 * **Custom Ranking Heuristics:** A multi-stage sorting algorithm to find true "Best Sellers" (balancing high review counts with high average ratings).
 * **VADER Sentiment Analysis:** Extracting polarity scores from the first 1000 characters of reviews to optimize performance.
