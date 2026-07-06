@@ -35,7 +35,7 @@ The analysis is strictly organized into two distinct Jupyter Notebooks, represen
 
 The data is sourced directly from [Hugging Face](https://huggingface.co/datasets) (McAuley Lab, 2023 release).
 * **Timespan:** May 1996 - September 2023
-* **Size:** ~6.4 GB total (10 CSV files: reviews and metadata for 5 categories).
+* **Size:** ~6.4 GB total (10 CSV files: reviews and metadata for 5 product categories).
 * **Optimization:** Both notebooks include an automatic download script. You can use the `max_rows` variable at the beginning of the notebooks to limit the dataset size and save system RAM/execution time during testing.
 
 ---
